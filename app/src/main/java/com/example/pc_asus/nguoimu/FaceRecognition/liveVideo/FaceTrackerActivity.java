@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -43,7 +45,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public final class FaceTrackerActivity extends AppCompatActivity {
+public final class FaceTrackerActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
     private static final String TAG = "FaceTracker";
 
     private CameraSource mCameraSource = null;
@@ -58,6 +60,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     ImageView img_face_detected;
     final boolean[] finishDelay = {false};
 
+    TextToSpeech tts;
     //==============================================================================================
     // Activity Methods
     //==============================================================================================
@@ -85,7 +88,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
         img_face_detected = findViewById(R.id.img_face_detect);
         img_face_detected.setVisibility(View.INVISIBLE);
+
+        tts = new TextToSpeech(this, this);
     }
+
+
 
     /**
      * Handles the requesting of the camera permission.  This includes
@@ -266,6 +273,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         if (mCameraSource != null) {
             mCameraSource.release();
         }
+
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
     }
 
 
@@ -364,7 +376,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 .build();
         API api = retrofit.create(API.class);
 
-        Call<String> call = api.recognitionFace("kpop", body);
+        Call<String> call = api.recognitionFace(AppUtil.getUidLowerCase(), body);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -373,12 +385,14 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 Toast.makeText(FaceTrackerActivity.this, response.body(), Toast.LENGTH_SHORT).show();
                 Log.e("abc", "result=" + response.body());
                 img_face_detected.setVisibility(View.INVISIBLE);
+                tts.speak(response.body(), TextToSpeech.QUEUE_FLUSH, null);
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("abc", "lỗi " + t);
                 Toast.makeText(FaceTrackerActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+                tts.speak("Lỗi", TextToSpeech.QUEUE_FLUSH, null);
                 //     dialog.dismiss();
             }
         });
@@ -404,6 +418,16 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             }
         }, s);
 
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status != TextToSpeech.ERROR) {
+
+            Locale l = new Locale("vi");
+            tts.setLanguage(l);
+
+        }
     }
 }
 

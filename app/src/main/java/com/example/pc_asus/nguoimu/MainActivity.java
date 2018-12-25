@@ -23,7 +23,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.pc_asus.nguoimu.CheckOpenApp.CheckOpenAppService;
 import com.example.pc_asus.nguoimu.FaceRecognition.FaceRecognitionActivity;
+import com.example.pc_asus.nguoimu.FaceRecognition.ListTrainedActivity;
+import com.example.pc_asus.nguoimu.FaceRecognition.liveVideo.FaceTrackerActivity;
 import com.example.pc_asus.nguoimu.PlacesOftenCome.PlacesOftenComeActivity;
 import com.example.pc_asus.nguoimu.SearchTNV.SearchTnvActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,6 +75,11 @@ public class MainActivity extends AppCompatActivity
 //                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
 //                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
 //                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
+
+       // Intent intent= new Intent(MainActivity.this, CheckOpenAppService.class);
+      //  stopService(intent);
+
 
 
         tts = new TextToSpeech(this, this);
@@ -133,11 +141,14 @@ public class MainActivity extends AppCompatActivity
                             } else if (demTap[0] == 2) {
                                 tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH, null);
                                 startActivity(new Intent(MainActivity.this, VideoCallViewActivity.class));
+                            }else if (demTap[0] == 3) {
+                                tts.speak("hướng camera về phía người cần nhận diện", TextToSpeech.QUEUE_FLUSH, null);
+                                startActivity(new Intent(MainActivity.this, FaceTrackerActivity.class));
                             }
 
                             demTap[0] = 0;
                         }
-                    }, 1000);
+                    }, 1500);
 
                 }
             });
@@ -198,7 +209,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, PlacesOftenComeActivity.class));
 
         } else if (id == R.id.nav_face_recognition) {
-            startActivity(new Intent(MainActivity.this, FaceRecognitionActivity.class));
+            startActivity(new Intent(MainActivity.this, ListTrainedActivity.class));
 
         }
 
@@ -282,14 +293,17 @@ public class MainActivity extends AppCompatActivity
 
                 for (int i = 0; i < result.size(); i++) {
                     Log.e("abc", result.get(i));
+
                     if (result.get(i).equalsIgnoreCase("kết nối")) {
                         tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH, null);
                         startActivity(new Intent(MainActivity.this, VideoCallViewActivity.class));
+                    } else if (result.get(i).equalsIgnoreCase("kia là ai")) {
+                         tts.speak("hãy hướng camera về người cần nhận diện", TextToSpeech.QUEUE_FLUSH,null);
+                        startActivity(new Intent(MainActivity.this, FaceTrackerActivity.class));
+                    }else if (result.get(i).equalsIgnoreCase("đây là ai")) {
+                        tts.speak("hãy hướng camera về người cần nhận diện", TextToSpeech.QUEUE_FLUSH,null);
+                        startActivity(new Intent(MainActivity.this, FaceTrackerActivity.class));
                     }
-// else if(result.get(i).equalsIgnoreCase("kia là ai")){
-//                       // tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH,null);
-//                        startActivity(new Intent(MainActivity.this, FaceRecognitionActivity.class));
-//                    }
 
 
                 }

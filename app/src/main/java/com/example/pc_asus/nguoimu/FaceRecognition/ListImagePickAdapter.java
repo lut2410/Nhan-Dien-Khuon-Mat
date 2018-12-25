@@ -13,11 +13,11 @@ import com.example.pc_asus.nguoimu.R;
 
 import java.util.List;
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+public class ListImagePickAdapter extends RecyclerView.Adapter<ListImagePickAdapter.ViewHolder> {
 
     List<Bitmap> arrImage;
 
-    public ImageAdapter(List<Bitmap> arrImage, Context context) {
+    public ListImagePickAdapter(List<Bitmap> arrImage, Context context) {
         this.arrImage = arrImage;
         this.context = context;
     }
@@ -52,4 +52,5 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
         }
     }
+
 }

@@ -129,7 +129,7 @@ public class SignInActivity extends AppCompatActivity {
 
         Log.e("abc",email);
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(SignInActivity.this, "Vui lòng nhập đầy đủ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "Chưa nhập email hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
         } else {
             dialog.show();
 
@@ -167,7 +167,7 @@ public class SignInActivity extends AppCompatActivity {
                                             Log.e("abcde", "Khong dang nhap duoc");
                                             isBlind = false;
                                             dialog.dismiss();
-                                            Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SignInActivity.this,"Tài khoản hoặc mật khẩu không chính xác!",Toast.LENGTH_SHORT).show();
                                             FirebaseAuth.getInstance().signOut();
                                         }
                                     }
@@ -183,7 +183,7 @@ public class SignInActivity extends AppCompatActivity {
 
                             } else {
                                 dialog.dismiss();
-                                Toast.makeText(SignInActivity.this, "Sai email hoặc mật khẩu", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignInActivity.this, "Tài khoản hoặc mật khẩu không chính xác!", Toast.LENGTH_SHORT).show();
 
                             }
 
@@ -199,7 +199,7 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = mAuth.getInstance().getCurrentUser();
         Boolean emailFlag = firebaseUser.isEmailVerified();
         if(emailFlag){
-            Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(SignInActivity.this, MainActivity.class));
             finish();
         }else{

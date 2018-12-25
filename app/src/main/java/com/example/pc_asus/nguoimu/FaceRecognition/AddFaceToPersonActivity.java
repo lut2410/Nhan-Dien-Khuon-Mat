@@ -7,15 +7,14 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.pc_asus.nguoimu.AppUtil;
-import com.example.pc_asus.nguoimu.MainActivity;
 import com.example.pc_asus.nguoimu.Model.PersonTraining;
 import com.example.pc_asus.nguoimu.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -52,7 +50,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class TrainingActivity extends AppCompatActivity {
+public class AddFaceToPersonActivity extends AppCompatActivity {
+
     private ListImagePickAdapter adapter;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     List<Bitmap> arrBitMapImage;
@@ -60,44 +59,39 @@ public class TrainingActivity extends AppCompatActivity {
     private Retrofit retrofit;
     Call<String> call;
     File mfile;
-     EditText edt_name;
-     int i=0;
+    int i=0;
     private ProgressDialog dialog;
-     API api;
+    API api;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
     final StorageReference storageRef = storage.getReference();
-   // private DatabaseReference mDatabase;
-  //  private FirebaseUser mCurrentUser;
-  //  String uid;
+    // private DatabaseReference mDatabase;
+    //  private FirebaseUser mCurrentUser;
+    //  String uid;
+    String personId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_training);
+        setContentView(R.layout.activity_add_face_to_person);
 
-        ImageView btn_addImage= findViewById(R.id.img_train_addImage);
-        edt_name= findViewById(R.id.edt_train_name);
+        ImageView btn_addImage= findViewById(R.id.img_add_face_addImage);
 
-     //   mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
-    //   uid = mCurrentUser.getUid();
-     //   mDatabase= FirebaseDatabase.getInstance().getReference();
-
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent intent = getIntent();
+        personId = intent.getExtras().getString("personId");
 
         btn_addImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(TrainingActivity.this,
+                if (ContextCompat.checkSelfPermission(AddFaceToPersonActivity.this,
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
 
-                    ActivityCompat.requestPermissions(TrainingActivity.this,
+                    ActivityCompat.requestPermissions(AddFaceToPersonActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                 } else {
-                    Matisse.from(TrainingActivity.this)
+                    Matisse.from(AddFaceToPersonActivity.this)
                             .choose(MimeType.ofImage())
                             .countable(true)
                             .maxSelectable(10)
@@ -115,18 +109,17 @@ public class TrainingActivity extends AppCompatActivity {
 
 
         dialog= new ProgressDialog(this);
-            dialog.setMessage("         please wait...");
-        Button btnSave = findViewById(R.id.btn_train_save);
+        dialog.setMessage("         please wait...");
+        Button btnSave = findViewById(R.id.btn_add_face_save);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(edt_name.getText().toString().trim().isEmpty()){
-                    Toast.makeText(TrainingActivity.this, "Bạn chưa nhập tên", Toast.LENGTH_SHORT).show();
-                }else {
+
                     dialog.show();
-                    addPersontoGroup();
-                }
+                    addFaceToPerson(personId);
+                //    addPersontoGroup();
+
 
             }
         });
@@ -142,37 +135,6 @@ public class TrainingActivity extends AppCompatActivity {
 
     }
 
-
-
-    private  void addPersontoGroup(){
-
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(API.Base_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        final API api = retrofit.create(API.class);
-
-        call = api.addPersontoGroup(AppUtil.getUidLowerCase(),edt_name.getText().toString().trim());
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-
-                Toast.makeText(TrainingActivity.this, ""+response.body(), Toast.LENGTH_SHORT).show();
-                Log.e("abc", "result=" + response.body());
-
-                    addFaceToPerson(response.body());                      ///////////////////
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Log.e("abc", "lỗi add person");
-                Toast.makeText(TrainingActivity.this, "Lỗi add person", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     private  void addFaceToPerson(final String personId){
 
@@ -193,11 +155,11 @@ public class TrainingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 
-                Toast.makeText(TrainingActivity.this, response.body() + " "+(i+1), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddFaceToPersonActivity.this, response.body() + " "+(i+1), Toast.LENGTH_SHORT).show();
                 Log.e("abc", "result=" + response.body());
 
                 if(response.body().contains("Error")){
-                    Toast.makeText(TrainingActivity.this, "Ảnh bị lỗi! Vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddFaceToPersonActivity.this, "Ảnh bị lỗi! Vui lòng thử lại", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     return;
                 }else {
@@ -205,11 +167,11 @@ public class TrainingActivity extends AppCompatActivity {
                     if (i < arrBitMapImage.size()) {
                         addFaceToPerson(personId);                              ///////////////////////////
                     } else {
-                        trainingPerson(personId);
+                        trainingPerson();
 
+                      //  upLoadimage(arrBitMapImage.get(0),personId);
 
-
-
+                        //TODO lưu person lên firebase.
                     }
                 }
             }
@@ -217,13 +179,13 @@ public class TrainingActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("abc", "lỗi add face "+t.getMessage());
-                Toast.makeText(TrainingActivity.this, "Lỗi add face", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddFaceToPersonActivity.this, "Lỗi add face", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
-    private void trainingPerson(final String personId){
+    private void trainingPerson(){
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(API.Base_URL)
@@ -238,11 +200,14 @@ public class TrainingActivity extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Toast.makeText(TrainingActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddFaceToPersonActivity.this, response.body(), Toast.LENGTH_SHORT).show();
                 Log.e("abc","result="+response.body());
 
-                upLoadimage(arrBitMapImage.get(0),personId);
-              //  dialog.dismiss();
+                if(response.body().contains("Complete")) {
+                    arrBitMapImage.clear();
+                    adapter.notifyDataSetChanged();
+                }
+                dialog.dismiss();
 
 
             }
@@ -250,7 +215,7 @@ public class TrainingActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("abc","lỗi training ");
-                Toast.makeText(TrainingActivity.this, "Lỗi training", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddFaceToPersonActivity.this, "Lỗi training", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
@@ -262,24 +227,13 @@ public class TrainingActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        List<Uri> mSelected;
-       // List<String> paths;
         arrBitMapImage= new ArrayList<Bitmap>();
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            mSelected = Matisse.obtainResult(data);
 
-
-            //path of photo that taken by camera
             List<String> resultPaths;
 
             resultPaths = Matisse.obtainPathResult(data);
             if (resultPaths.size() > 0) {
-             //   filesToUpload.clear();
-             //   previewBitmaps.clear();
-
-             //   if (resultPaths.size() < 4) {
-            //        previewSize = previewSize * 2;
-            //    }
                 for (String path : resultPaths) {
                     Bitmap photoBitmap = AppUtil.rotateImage(path, 500, 500);
                     arrBitMapImage.add(photoBitmap);
@@ -296,7 +250,7 @@ public class TrainingActivity extends AppCompatActivity {
 
 
     private void initRecycleView(){
-        recyclerView =findViewById(R.id.rv_train_image);
+        recyclerView =findViewById(R.id.rv_add_face_image);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         recyclerView.setLayoutManager(layoutManager);
@@ -330,85 +284,59 @@ public class TrainingActivity extends AppCompatActivity {
 
 
 
-    private void upLoadimage(Bitmap bitmap, final String personId){
-//        final ProgressDialog dialog;
-//        dialog = new ProgressDialog(TrainingActivity.this);
-//        dialog.setMessage("      Đang lưu...");
-//        dialog.setCancelable(false);
-//        dialog.show();
-        Calendar calendar = Calendar.getInstance();
-       final String nameImg="img"+calendar.getTimeInMillis()+".png";
-
-        StorageReference mountainsRef = storageRef.child(nameImg);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = mountainsRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Toast.makeText(TrainingActivity.this, "Lỗi!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(TrainingActivity.this, "Đã lưu!", Toast.LENGTH_SHORT).show();
-               // dialog.dismiss();
-                Log.e("abc","upload xong");
-                getLinkImage(nameImg,personId);
-
-            }
-
-        });
-    }
-
-
-    private void getLinkImage(String nameImg, final String personId){
-        Log.e("abc","getlink");
-        storageRef.child(nameImg).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-
-                //add to firebase
-                PersonTraining personTraining= new PersonTraining(edt_name.getText().toString(),personId,uri.toString());
-                AppUtil.getmDatabase().child("NguoiMu").child("Training").child(AppUtil.getUid()).push().setValue(personTraining);
-                Log.e("abc","get link xong");
-
-                    arrBitMapImage.clear();
-                    adapter.notifyDataSetChanged();
-                    edt_name.setText("");
-
-                    dialog.dismiss();
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        });
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if(android.R.id.home==item.getItemId()){
-
-            Intent intent = new Intent(TrainingActivity.this, ListTrainedActivity.class);
-            startActivity(intent);
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    private void upLoadimage(Bitmap bitmap, final String personId){
+////        final ProgressDialog dialog;
+////        dialog = new ProgressDialog(TrainingActivity.this);
+////        dialog.setMessage("      Đang lưu...");
+////        dialog.setCancelable(false);
+////        dialog.show();
+//        Calendar calendar = Calendar.getInstance();
+//        final String nameImg="img"+calendar.getTimeInMillis()+".png";
+//
+//        StorageReference mountainsRef = storageRef.child(nameImg);
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+//        byte[] data = baos.toByteArray();
+//
+//        UploadTask uploadTask = mountainsRef.putBytes(data);
+//        uploadTask.addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception exception) {
+//                Toast.makeText(AddFaceToPersonActivity.this, "Lỗi!", Toast.LENGTH_SHORT).show();
+//            }
+//        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//            @Override
+//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                Toast.makeText(AddFaceToPersonActivity.this, "Đã lưu!", Toast.LENGTH_SHORT).show();
+//                // dialog.dismiss();
+//                Log.e("abc","upload xong");
+//                getLinkImage(nameImg,personId);
+//
+//            }
+//
+//        });
+//    }
 
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(TrainingActivity.this, ListTrainedActivity.class);
-        startActivity(intent);
-        finish();
+//    private void getLinkImage(String nameImg, final String personId){
+//        Log.e("abc","getlink");
+//        storageRef.child(nameImg).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//            @Override
+//            public void onSuccess(Uri uri) {
+//
+//                //add to firebase
+//                PersonTraining personTraining= new PersonTraining(edt_name.getText().toString().trim(),personId,uri.toString());
+//                AppUtil.getmDatabase().child("NguoiMu").child("Training").child(AppUtil.getUid()).push().setValue(personTraining);
+//                Log.e("abc","get link xong");
+//
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception exception) {
+//            }
+//        });
 
-    }
+//    }
+
+
 }

@@ -79,7 +79,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
-
+    private static final int PERMISSION_REQ_ID_LOCATION=33;
     private RtcEngine mRtcEngine;// Tutorial Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Tutorial Step 1
         @Override
@@ -140,11 +140,11 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                 }
             });
 
-
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 0, this);
-
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION, PERMISSION_REQ_ID_LOCATION)) {
+                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 0, this);
+            }
             mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 
@@ -196,6 +196,21 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                     initAgoraEngineAndJoinChannel();
                 } else {
                     showLongToast("No permission for " + android.Manifest.permission.CAMERA);
+                    finish();
+                }
+                break;
+            }
+
+            case PERMISSION_REQ_ID_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 0, this);
+
+                } else {
+                    showLongToast("No permission for " + Manifest.permission.ACCESS_FINE_LOCATION);
                     finish();
                 }
                 break;

@@ -90,6 +90,7 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
                         Intent intent1 = new Intent(CheckOpenAppService.this, MainActivity.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent1);
+                        stopSelf();
 
                     }else if(i==1){
 
@@ -112,5 +113,10 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
 
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSensorMgr.unregisterListener(this);
+        Log.e("abc", "on destroy check open app service");
+    }
 }

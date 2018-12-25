@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -16,22 +18,48 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SignInActivity">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/map_api_key" />
+
+        <activity
+            android:name=".SignInActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".AccountSettingsActivity" />
+        <activity android:name=".SignUpActivity"
+            android:screenOrientation="portrait" />
         <activity
+            android:name=".AccountSettingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:screenOrientation="portrait"
             android:name=".MainActivity"
             android:label="@string/title_activity_video_chat"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".FriendsActivity" />
-        <activity android:name=".SearchTnvActivity" />
-        <activity android:name=".VideoCallViewActivity"></activity>
+        <activity
+            android:name=".FriendsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".SearchTnvActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".VideoCallViewActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".TextRecognitionActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".AddPlaceActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".PlacesOftenComeActivity"></activity>
     </application>
 
 </manifest>

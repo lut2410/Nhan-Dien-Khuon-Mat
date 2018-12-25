@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"
+        android:id="@+id/group1">
         <item
             android:id="@+id/nav_accountSetting"
             android:icon="@drawable/ic_account_setting"
@@ -16,16 +17,16 @@
             android:id="@+id/nav_search"
             android:icon="@drawable/ic_search"
             android:title="Tìm Tình Nguyện Viên" />
+        <item
+            android:id="@+id/nav_place"
+            android:icon="@drawable/ic_location"
+            android:title="Địa điểm thường đến" />
 
     </group>
 
-    <item android:title="">
-        <menu>
             <item
                 android:id="@+id/nav_sign_out"
                 android:icon="@drawable/ic_sign_out"
                 android:title="Đăng Xuất" />
-        </menu>
-    </item>
 
 </menu>

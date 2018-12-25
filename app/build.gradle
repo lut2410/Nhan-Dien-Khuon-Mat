@@ -39,5 +39,10 @@ dependencies {
         exclude group: "com.android.support"
     }
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.rmtheis:tess-two:6.3.0'
+
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.google.android.gms:play-services-places:15.0.1'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
 }
 apply plugin: 'com.google.gms.google-services'

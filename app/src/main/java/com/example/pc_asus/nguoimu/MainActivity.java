@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
     }
 
 
@@ -185,6 +184,9 @@ public class MainActivity extends AppCompatActivity
 
         }else if (id == R.id.nav_search) {
             startActivity(new Intent(MainActivity.this,SearchTnvActivity.class));
+
+        }else if (id == R.id.nav_place) {
+            startActivity(new Intent(MainActivity.this,PlacesOftenComeActivity.class));
 
         }
 
@@ -274,6 +276,9 @@ public class MainActivity extends AppCompatActivity
                     if(result.get(i).equalsIgnoreCase("kết nối")){
                         tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH,null);
                         startActivity(new Intent(MainActivity.this, VideoCallViewActivity.class));
+                    }else if(result.get(i).equalsIgnoreCase("alo")){
+                       // tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH,null);
+                        startActivity(new Intent(MainActivity.this, TextRecognitionActivity.class));
                     }
 
 

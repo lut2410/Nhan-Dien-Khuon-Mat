@@ -1,6 +1,7 @@
 package com.example.pc_asus.nguoimu;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -58,15 +59,12 @@ public class SignUpActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 dialog.dismiss();
-                                Toast.makeText(SignUpActivity.this, "Đăng Ký Thành Công", Toast.LENGTH_SHORT).show();
-
                                 User user= new User(edt_name.getText().toString(),edt_email.getText().toString(), edt_phoneNumber.getText().toString(),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/generic-user-purple.png?alt=media&token=21815e8a-2bcd-477a-bf37-f6b382f0c409");
                                 FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
                                 String uid=currentUser.getUid();
                                 DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid);
                                 mDatabase.setValue(user);
-                                finish();
-
+                                sendEmailVerification();
                             } else {
                                 dialog.dismiss();
                                 if (password.length() < 6) {
@@ -77,6 +75,29 @@ public class SignUpActivity extends AppCompatActivity {
                             }
                         }
                     });
+        }
+    }
+    private void sendEmailVerification(){
+        final FirebaseUser firebaseUser = mAuth.getInstance().getCurrentUser();
+        if(firebaseUser != null){
+            firebaseUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(SignUpActivity.this,"Đăng ký thành công, vui lòng xác nhận email !",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignUpActivity.this,SignInActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("Email",edt_email.getText().toString());
+                        bundle.putString("Password",edt_password.getText().toString());
+                        intent.putExtra("Bundle",bundle);
+                        startActivity(intent);
+                        finish();
+                        mAuth.signOut();
+                    }else{
+                        Toast.makeText(SignUpActivity.this, "Thư xác nhận email chưa được gửi",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 }

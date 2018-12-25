@@ -1,6 +1,7 @@
 package com.example.pc_asus.nguoimu;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -53,7 +54,7 @@ public class SearchTnvActivity extends AppCompatActivity implements SearchView.O
 
         searchView=(SearchView) findViewById(R.id.sv_search2);
         searchView.setOnQueryTextListener(this);
-
+        searchView.setQueryHint("Nhập email");
 
         mDatabase.child("TinhNguyenVien").child("Users").addChildEventListener(new ChildEventListener() {
             @Override
@@ -95,37 +96,37 @@ public class SearchTnvActivity extends AppCompatActivity implements SearchView.O
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                    final Dialog dialog = new Dialog(SearchTnvActivity.this);
-                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setContentView(R.layout.dialog_add_friend);
+                android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(SearchTnvActivity.this);
+                alertDialog.setTitle("          Xác Nhận...");
+                alertDialog.setMessage("Thêm người này vào danh sách bạn bè?");
+                alertDialog.setIcon(R.mipmap.war);
 
-    //                Window window = dialog.getWindow();
-    //                WindowManager.LayoutParams wlp = window.getAttributes();
-    //
-    //                wlp.gravity = Gravity.RIGHT;
-    //
-    //                wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-    //                window.setAttributes(wlp);
-                    TextView tv_addFriend= (TextView) dialog.findViewById(R.id.tv_addFriend);
-                TextView tv_close= (TextView) dialog.findViewById(R.id.tv_close);
-                tv_close.setOnClickListener(new View.OnClickListener() {
+                alertDialog.setPositiveButton("Có", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                tv_addFriend.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
                         mDatabase.child("NguoiMu").child("Friends").child(uid).child(arrTNV2.get(position).id).setValue(arrTNV2.get(position).user);
+                        Toast.makeText(SearchTnvActivity.this, "Đã thêm", Toast.LENGTH_SHORT).show();
 
-                        Toast.makeText(SearchTnvActivity.this, "Đã gửi yêu cầu", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
                     }
                 });
-                dialog.show();
+                alertDialog.setNeutralButton("Không", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                alertDialog.show();
+
+
+
+
+
+
+
+
+
             }
         });
 
@@ -143,8 +144,8 @@ public class SearchTnvActivity extends AppCompatActivity implements SearchView.O
         int s = newText.length();
         arrTNV2.clear();
         adapter.notifyDataSetChanged();
-        if(newText.length()>=3) {
-            for (int i = 0; i < arrTNV.size(); i++) {
+
+        for (int i = 0; i < arrTNV.size(); i++) {
                 mail = arrTNV.get(i).user.email.substring(0, s);
                 if (newText.equalsIgnoreCase(mail) == true) {
                     arrTNV2.add(arrTNV.get(i));
@@ -152,7 +153,12 @@ public class SearchTnvActivity extends AppCompatActivity implements SearchView.O
 
                 }
             }
-        }
+
+//         if(newText.isEmpty()){
+//           arrTNV2.addAll(arrTNV);
+//            adapter.notifyDataSetChanged();
+//
+//        }
         return false;
     }
 }

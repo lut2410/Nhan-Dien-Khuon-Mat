@@ -550,7 +550,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                         checkStatusOfDevice();
 
                                     }
-                                }, 1000);
+                                }, 2000);
 
                                 final boolean[] check = {true};
                                 // nếu TNV ko bắt máy thì sẽ kết nối lại vs TNV  random
@@ -666,17 +666,20 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
 
     private  void checkStatusOfDevice(){
-        mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("checkStatusDevice").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String stt = "0"; //TODO sửa thành 0;
+                String stt = "0";
                 try {
-                    stt = dataSnapshot.getValue().toString();
+                    stt = dataSnapshot.child("checkStatusDevice").getValue().toString();
                 }catch (Exception e){}
-                if(stt.equals("0")) {
+
+                if(stt.equals("0") )  {
                     Log.e("abc","thuê bao quý khách vừa gọi hiện đang bận");
-                    mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(1);
+                    mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(1); //set = 1 là tự động gọi lại
+                   //TODO vẫn còn lỗi
                 }
+
             }
 
             @Override

@@ -1,5 +1,6 @@
 package com.example.pc_asus.nguoimu;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +27,10 @@ import java.util.List;
 public class FriendsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
+    String uid;
     ArrayList<TNV> arrTNV= new ArrayList<TNV>();
     ArrayList<TNV> arrTNV2= new ArrayList<TNV>();
+
 
     ListView lv_listTnv;
     ListTnvAdapter adapter;
@@ -38,7 +41,7 @@ public class FriendsActivity extends AppCompatActivity implements SearchView.OnQ
         setContentView(R.layout.activity_friends);
 
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
-        String uid= mCurrentUser.getUid();
+        uid= mCurrentUser.getUid();
         try {
             mDatabase = FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Friends").child(uid);        // chưa kết bạn -> ko có nhánh friends -> lỗi
         }catch (Exception e){
@@ -51,7 +54,7 @@ public class FriendsActivity extends AppCompatActivity implements SearchView.OnQ
 
         searchView=(SearchView) findViewById(R.id.sv_search);
         searchView.setOnQueryTextListener(this);
-
+        searchView.setQueryHint("Nhập email");
 
         mDatabase.addChildEventListener(new ChildEventListener() {
             @Override
@@ -91,10 +94,45 @@ public class FriendsActivity extends AppCompatActivity implements SearchView.OnQ
 
         lv_listTnv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(FriendsActivity.this, ""+arrTNV2.get(position).user.name, Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(FriendsActivity.this);
+                alertDialog.setTitle("          Xác Nhận...");
+                alertDialog.setMessage("Xóa người này ra khỏi danh sách bạn bè?");
+                alertDialog.setIcon(R.mipmap.war);
+
+                alertDialog.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        mDatabase.child(arrTNV2.get(position).id).removeValue();
+                        arrTNV.remove(position);
+                        arrTNV2.remove(position);
+                        adapter.notifyDataSetChanged();
+
+                        Toast.makeText(FriendsActivity.this, "Đã xóa", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+                alertDialog.setNeutralButton("Không", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+                alertDialog.show();
+
             }
         });
+
+
+
+
+
+
+
+
 
     }
 
@@ -110,7 +148,7 @@ public class FriendsActivity extends AppCompatActivity implements SearchView.OnQ
             int s = newText.length();
             arrTNV2.clear();
             adapter.notifyDataSetChanged();
-        if(newText.length()>=3) {
+
             for (int i = 0; i < arrTNV.size(); i++) {
                 mail = arrTNV.get(i).user.email.substring(0, s);
                 if (newText.equalsIgnoreCase(mail) == true) {
@@ -119,7 +157,11 @@ public class FriendsActivity extends AppCompatActivity implements SearchView.OnQ
 
                 }
             }
-        }
+
+//         if(newText.isEmpty()){
+//            arrTNV2.addAll(arrTNV);
+//            adapter.notifyDataSetChanged();
+//        }
         return false;
     }
 }

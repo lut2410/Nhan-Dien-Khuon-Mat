@@ -1,8 +1,8 @@
 package com.example.pc_asus.nguoimu;
 
 public class TNV {
-    User user;
-    String id;
+    public User user;
+    public String id;
 
     public TNV(User user, String id) {
         this.user = user;

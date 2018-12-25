@@ -5,6 +5,7 @@ public class User {
     public  String email;
     public String phoneNumber;
     public String photoURL;
+    public String typeUser;
 
     public User() {
     }
@@ -14,5 +15,6 @@ public class User {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.photoURL = photoURL;
+        this.typeUser = "blind";
     }
 }

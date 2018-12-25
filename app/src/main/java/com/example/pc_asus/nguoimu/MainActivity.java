@@ -76,60 +76,60 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View headView= navigationView.getHeaderView(0);
-        final ImageView img= (ImageView) headView.findViewById(R.id.img_bar_avatar);
-        final TextView tv_name=(TextView) headView.findViewById(R.id.tv_bar_name);
+        View headView = navigationView.getHeaderView(0);
+        final ImageView img = (ImageView) headView.findViewById(R.id.img_bar_avatar);
+        final TextView tv_name = (TextView) headView.findViewById(R.id.tv_bar_name);
         final String[] photoURL = new String[1];
 
 
-        final View tvTap =  findViewById(R.id.tv_tap);
+        final View tvTap = findViewById(R.id.tv_tap);
 
 
+        tts = new TextToSpeech(this, this);
 
 
-        tts= new TextToSpeech(this, this);
+        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
-         uid= mCurrentUser.getUid();
-        mDatabase= FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("NguoiMu").child("Users").child(uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                tv_name.setText(dataSnapshot.child("name").getValue().toString());
-                photoURL[0] =dataSnapshot.child("photoURL").getValue().toString();
-               // Picasso.with(VideoChatActivity.this).load(dataSnapshot.child("photoURL").getValue().toString()).into(img);
-                RequestOptions  requestOptions = new RequestOptions();
-                requestOptions.fitCenter();
-                requestOptions.placeholder(R.mipmap.user);
-                Glide.with(getApplicationContext())
-                        .load(photoURL[0])
-                        .apply(requestOptions)
-                        //   .override(200,150)
-                        .into(img);
+        if (mCurrentUser == null) {
+            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+            startActivity(intent);
+        } else {
+            uid = mCurrentUser.getUid();
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            mDatabase.child("NguoiMu").child("Users").child(uid).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    tv_name.setText(dataSnapshot.child("name").getValue().toString());
+                    photoURL[0] = dataSnapshot.child("photoURL").getValue().toString();
+                    // Picasso.with(VideoChatActivity.this).load(dataSnapshot.child("photoURL").getValue().toString()).into(img);
+                    RequestOptions requestOptions = new RequestOptions();
+                    requestOptions.fitCenter();
+                    requestOptions.placeholder(R.mipmap.user);
+                    Glide.with(getApplicationContext())
+                            .load(photoURL[0])
+                            .apply(requestOptions)
+                            //   .override(200,150)
+                            .into(img);
 
-            }
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
 
 
-        tvTap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promptSpeechInput();
-            }
-        });
+            tvTap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    promptSpeechInput();
+                }
+            });
+        }
 
 
     }
-
-
-
-
-
 // Của Layout
 
 

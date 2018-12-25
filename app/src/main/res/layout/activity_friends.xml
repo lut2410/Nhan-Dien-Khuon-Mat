@@ -5,21 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FriendsActivity">
+<LinearLayout
+    android:orientation="vertical"
+    android:weightSum="25"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <SearchView
         android:id="@+id/sv_search"
         android:layout_width="match_parent"
-        android:layout_height="54dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:background="#58fa880d"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_weight="3"
+        android:background="#589da9e4" />
 
     <ListView
         android:id="@+id/lv_listTNV"
         android:layout_width="match_parent"
-        android:layout_height="440dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sv_search" />
+        android:layout_height="0dp"
+        android:layout_weight="22"
+        />
+</LinearLayout>
 </android.support.constraint.ConstraintLayout>

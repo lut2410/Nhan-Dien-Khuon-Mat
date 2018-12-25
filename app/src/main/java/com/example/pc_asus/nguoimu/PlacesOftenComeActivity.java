@@ -1,5 +1,6 @@
 package com.example.pc_asus.nguoimu;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,6 +31,8 @@ public class PlacesOftenComeActivity extends AppCompatActivity {
     String uid;
     ListView lvPlaces;
     ArrayList<PlaceOC> arrPlace=new ArrayList<PlaceOC>();
+    ArrayList<String> arrKey= new ArrayList<String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +60,8 @@ public class PlacesOftenComeActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 PlaceOC p= dataSnapshot.getValue(PlaceOC.class);
                 arrPlace.add(new PlaceOC(dataSnapshot.child("namePlace").getValue().toString(),dataSnapshot.child("address").getValue().toString()));
+                arrKey.add(dataSnapshot.getKey());
+
                 Log.e("abc","name:"+p.namePlace);
                 adapter.notifyDataSetChanged();
 
@@ -88,8 +93,34 @@ public class PlacesOftenComeActivity extends AppCompatActivity {
 
         lvPlaces.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(PlacesOftenComeActivity.this, ""+position, Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(PlacesOftenComeActivity.this);
+                alertDialog.setTitle("          Xác Nhận...");
+                alertDialog.setMessage("Xóa địa điểm này?");
+                alertDialog.setIcon(R.mipmap.war);
+
+                alertDialog.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        mDatabase.child(arrKey.get(position)).removeValue();
+                        arrPlace.remove(position);
+                        adapter.notifyDataSetChanged();
+
+                        Toast.makeText(PlacesOftenComeActivity.this, "Đã xóa", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+                alertDialog.setNeutralButton("Không", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                alertDialog.show();
+
             }
         });
 

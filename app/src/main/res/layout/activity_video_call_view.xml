@@ -4,20 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".VideoChatActivity"
-    tools:showIn="@layout/app_bar_video_chat">
-
+    tools:context=".VideoCallViewActivity">
 
     <TextView
-        android:id="@+id/tv_tap"
+        android:id="@+id/tv_endCallActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="Chạm vào màn hình và nói"
+        android:text="Chạm vào màn hình để hủy kết nối"
         android:textColor="@android:color/holo_orange_dark"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
-
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

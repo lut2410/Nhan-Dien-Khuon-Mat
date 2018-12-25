@@ -59,7 +59,7 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         Log.e("abc","trang thai dang nhap "+currentUser);
         if(currentUser!=null) {
-              Intent intent= new Intent(SignInActivity.this,VideoChatActivity.class);
+              Intent intent= new Intent(SignInActivity.this,MainActivity.class);
               startActivity(intent);
               finish();
         }
@@ -84,7 +84,7 @@ public class SignInActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 dialog.dismiss();
                                 //     Toast.makeText(MainActivity.this, "Đăng Nhập Thành Công", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SignInActivity.this, VideoChatActivity.class);
+                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             } else {

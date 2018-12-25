@@ -1,14 +1,23 @@
 package com.example.pc_asus.nguoimu;
 
+import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,15 +44,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
-public class VideoChatActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import io.agora.rtc.Constants;
+import io.agora.rtc.IRtcEngineEventHandler;
+import io.agora.rtc.RtcEngine;
+import io.agora.rtc.video.VideoCanvas;
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener,TextToSpeech.OnInitListener {
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
-    private SharedPreferences sharedPreferences;
     String uid;
-    boolean readData=false;
+    TextToSpeech tts;
+    private final int REQ_CODE_SPEECH_INPUT = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +86,8 @@ public class VideoChatActivity extends AppCompatActivity
 
 
 
+
+        tts= new TextToSpeech(this, this);
 
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
          uid= mCurrentUser.getUid();
@@ -100,74 +119,10 @@ public class VideoChatActivity extends AppCompatActivity
         tvTap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                readData=true;
-                getListFriend(uid);
+                promptSpeechInput();
             }
         });
 
-    }
-
-
-
-
-
-
-
-
-
-
-
-    private void getListFriend(String uid){
-
-        final ArrayList<String> arr = new ArrayList<String>();
-
-            mDatabase.child("NguoiMu").child("Friends").child(uid).addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    if(readData==true) {
-                        arr.add(dataSnapshot.getKey());
-                    }
-                    //   User user= dataSnapshot.getValue(User.class);
-                    //  Log.e("arr",user.name);
-
-
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-
-            mDatabase.child("NguoiMu").child("Friends").child(uid).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(readData==true) {
-                        getStatusOfFriends(arr);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
 
 
     }
@@ -175,51 +130,9 @@ public class VideoChatActivity extends AppCompatActivity
 
 
 
-    private void getStatusOfFriends(final ArrayList<String> arr2){
 
-            final ArrayList<String> arrTNVFreeTime = new ArrayList<String>();
+// Của Layout
 
-            for (int i = 0; i < arr2.size(); i++) {
-                Log.e("arr", "friends=" + arr2.get(i));
-                final int finished = i;
-                mDatabase.child("TinhNguyenVien").child("Status").child(arr2.get(i)).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(readData==true) {
-                            String s0 = dataSnapshot.child("statusWithFriends").getValue().toString();
-                            int status = Integer.parseInt(s0);
-                            if (status == 1) {
-                                arrTNVFreeTime.add(dataSnapshot.getKey());
-                                Log.e("arr", dataSnapshot.getKey());
-
-                            }
-
-                            if (finished == arr2.size() - 1) {
-                                Random rd = new Random();
-                                int number = rd.nextInt(arrTNVFreeTime.size());
-                                String idSelected = arrTNVFreeTime.get(number);
-                                Toast.makeText(VideoChatActivity.this, idSelected, Toast.LENGTH_SHORT).show();//////////////ĐÃ chọn dc bbe đang rãnh
-                                mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(uid);                           // nhớ sữa code xet lun coi có đang kết nối vs ai ko mới chọn
-
-                                Log.e("arr", idSelected);
-                                readData = false;
-
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-            }
-
-       }
-      //  return arrTNVFreeTime;
- //  }
 
 
 
@@ -239,19 +152,14 @@ public class VideoChatActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.video_chat, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -262,34 +170,120 @@ public class VideoChatActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_accountSetting) {
-            startActivity(new Intent(VideoChatActivity.this,AccountSettingsActivity.class));
-           // Toast.makeText(this, "settings", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this,AccountSettingsActivity.class));
 
         } else if (id == R.id.nav_friends) {
-            startActivity(new Intent(VideoChatActivity.this,FriendsActivity.class));
-
-            //Toast.makeText(this, "friends", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this,FriendsActivity.class));
 
         } else if (id == R.id.nav_sign_out) {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(VideoChatActivity.this,SignInActivity.class));
+            startActivity(new Intent(MainActivity.this,SignInActivity.class));
             finish();
-          //  Toast.makeText(this, "sign out", Toast.LENGTH_SHORT).show();
-
 
         }else if (id == R.id.nav_search) {
-            startActivity(new Intent(VideoChatActivity.this,SearchTnvActivity.class));
-            //  Toast.makeText(this, "sign out", Toast.LENGTH_SHORT).show();
-
+            startActivity(new Intent(MainActivity.this,SearchTnvActivity.class));
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+
+
+
+
+
+    ////của VideoCall
+
+
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+
+        if(tts!=null){
+            tts.stop();
+            tts.shutdown();
+        }
+    }
+
+
+
+    @Override
+    public void onInit(int i) {
+        if(i !=TextToSpeech.ERROR) {
+
+            Locale l = new Locale("vi");
+            tts.setLanguage(l);
+
+        }
+    }
+
+
+    //dialog voice của google
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        // xac nhan ung dung muon gui yeu cau
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
+
+        // goi y nhung dieu nguoi dung muon noi
+
+        // goi y nhan dang nhung gi nguoi dung se noi
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Say something…");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    "Sorry! Your device doesn't support speech input",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Trả lại dữ liệu sau khi nhập giọng nói vào
+     * */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+//        switch (requestCode) {
+//            case REQ_CODE_SPEECH_INPUT:
+        if( requestCode==REQ_CODE_SPEECH_INPUT){
+            if (resultCode == RESULT_OK && null != data) {
+
+                ArrayList<String> result = data
+                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                // nói lại những gì vừa nghe dc
+
+                for(int i=0;i<result.size();i++) {
+                    Log.e("abc", result.get(i));
+                    if(result.get(i).equalsIgnoreCase("kết nối")){
+                        tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH,null);
+                        startActivity(new Intent(MainActivity.this, VideoCallViewActivity.class));
+                    }
+
+
+                }
+            }
+
+
+
+        }
+
+
     }
 }

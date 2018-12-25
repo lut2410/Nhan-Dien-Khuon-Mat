@@ -1,4 +1,4 @@
-package com.example.pc_asus.nguoimu;
+package com.example.pc_asus.nguoimu.SearchTNV;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.pc_asus.nguoimu.Model.TNV;
+import com.example.pc_asus.nguoimu.R;
 
 import java.util.List;
 

@@ -33,6 +33,7 @@ public class SignInActivity extends AppCompatActivity {
     Button btn_signIn, btn_signUp;
     private FirebaseAuth mAuth;
     Boolean isBlind = false;
+    static String android_id ;
 
 // ...
 
@@ -79,9 +80,6 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
-        if (!isBlind){
-            FirebaseAuth.getInstance().signOut();
-        };
 
     }
     private void forgotPW() {
@@ -131,7 +129,7 @@ public class SignInActivity extends AppCompatActivity {
 
         Log.e("abc",email);
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "Vui lòng nhập đầy đủ", Toast.LENGTH_SHORT).show();
         } else {
             dialog.show();
 
@@ -141,22 +139,22 @@ public class SignInActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
 
-                                ///// đăng nhập kiểm tra có đúng tài khoản người khiếm thị hay không, nếu đúng thì cho phép đăng nhập
-                                DatabaseReference mDatabase;
+                                ///// đăng nhập kiểm tra có đúng tài khoản nguoi mu hay không, nếu đúng thì cho phép đăng nhập
+                                final DatabaseReference mDatabase;
                                 FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
                                 String uid= mCurrentUser.getUid();
-                                mDatabase = FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid).child("typeUser");
+                                mDatabase = FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid);
                                 Log.e("abcde", String.valueOf(mDatabase));
                                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         try {
-                                            String typeUser = dataSnapshot.getValue().toString();
-                                            Log.e("abcde", "type user " + typeUser);
-                                            if ("blind".equals(typeUser)) {
+                                            String data = dataSnapshot.getValue().toString();
+                                            if (!data.equals(null)) {
                                                 dialog.dismiss();
                                                 isBlind = true;
                                                 Log.e("abcde", "Dang nhap");
+                                                mDatabase.child("idDevice").setValue(android_id);
                                                 checkEmailValification();
                                             } else {
                                                 dialog.dismiss();
@@ -166,6 +164,7 @@ public class SignInActivity extends AppCompatActivity {
                                             }
                                         }
                                         catch (Exception e){
+                                            Log.e("abcde", "Khong dang nhap duoc");
                                             isBlind = false;
                                             dialog.dismiss();
                                             Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản",Toast.LENGTH_SHORT).show();
@@ -184,7 +183,7 @@ public class SignInActivity extends AppCompatActivity {
 
                             } else {
                                 dialog.dismiss();
-                                Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignInActivity.this, "Sai email hoặc mật khẩu", Toast.LENGTH_SHORT).show();
 
                             }
 
@@ -194,6 +193,8 @@ public class SignInActivity extends AppCompatActivity {
 
         }
     }
+
+
     private void checkEmailValification(){
         FirebaseUser firebaseUser = mAuth.getInstance().getCurrentUser();
         Boolean emailFlag = firebaseUser.isEmailVerified();

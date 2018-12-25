@@ -13,6 +13,9 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.example.pc_asus.nguoimu.Model.TNV;
+import com.example.pc_asus.nguoimu.Model.User;
+import com.example.pc_asus.nguoimu.SearchTNV.ListTnvAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -22,7 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class FriendsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private DatabaseReference mDatabase;

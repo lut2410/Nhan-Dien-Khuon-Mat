@@ -1,4 +1,4 @@
-package com.example.pc_asus.nguoimu;
+package com.example.pc_asus.nguoimu.Model;
 
 public class TNV {
     public User user;

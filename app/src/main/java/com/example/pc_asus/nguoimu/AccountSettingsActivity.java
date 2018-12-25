@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -24,6 +23,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.pc_asus.nguoimu.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -287,7 +287,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 photoURL[0]=uri.toString();
-                User user = new User(edt_name.getText().toString(),edt_email.getText().toString(),edt_phoneNumber.getText().toString(),photoURL[0]);
+                User user = new User(edt_name.getText().toString(),edt_email.getText().toString(),edt_phoneNumber.getText().toString(),photoURL[0],SignInActivity.android_id);
                 mDatabase.setValue(user);
                 Log.e("abc","get link xong");
 

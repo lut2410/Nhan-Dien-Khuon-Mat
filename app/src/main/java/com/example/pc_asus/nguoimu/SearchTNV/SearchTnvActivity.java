@@ -1,6 +1,5 @@
-package com.example.pc_asus.nguoimu;
+package com.example.pc_asus.nguoimu.SearchTNV;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,16 +7,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 //import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pc_asus.nguoimu.Model.TNV;
+import com.example.pc_asus.nguoimu.Model.User;
+import com.example.pc_asus.nguoimu.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -27,7 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SearchTnvActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private DatabaseReference mDatabase;

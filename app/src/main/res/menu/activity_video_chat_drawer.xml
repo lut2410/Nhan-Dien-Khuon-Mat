@@ -22,6 +22,11 @@
             android:icon="@drawable/ic_location"
             android:title="Địa điểm thường đến" />
 
+        <item
+            android:id="@+id/nav_face_recognition"
+            android:icon="@drawable/ic_face_recognition"
+            android:title="Nhận diện người quen" />
+
     </group>
 
             <item

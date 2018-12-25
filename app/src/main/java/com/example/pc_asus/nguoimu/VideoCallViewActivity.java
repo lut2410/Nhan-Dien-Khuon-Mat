@@ -547,10 +547,11 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
+                                        Log.e("abc"," delay 5s xong ....................");
                                         checkStatusOfDevice();
 
                                     }
-                                }, 2000);
+                                }, 5000);
 
                                 final boolean[] check = {true};
                                 // nếu TNV ko bắt máy thì sẽ kết nối lại vs TNV  random
